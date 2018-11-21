@@ -82,6 +82,20 @@ public class Transporter {
         return executeRequest(request, completionHandler: completionHandler);
     }
     
+    //MARK: PUT
+    
+    @discardableResult
+    public func put<T>(_ model: T, for controllerType: AnyClass? = nil, pathVars: PathVars? = nil, queryParams: QueryParams? = nil, completionHandler: @escaping EmptyCompletionBlock) -> URLSessionTask where T: Codable {
+        let url = getUrl(T.self, for: controllerType, pathVars: pathVars, queryParams: queryParams);
+        
+        var request = URLRequest(url: url);
+        request.httpMethod = HttpMethod.put.rawValue;
+        request.httpBody = try! model.toData();
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        return executeRequest(request, completionHandler: completionHandler);
+    }
+    
     // MARK: Execution
     
     @discardableResult
@@ -113,4 +127,6 @@ public class Transporter {
 public enum HttpMethod: String {
     case get = "GET"
     case post = "POST"
+    case put = "PUT"
+    case delete = "DELETE"
 }
