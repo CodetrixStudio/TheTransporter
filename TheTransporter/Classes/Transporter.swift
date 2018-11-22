@@ -20,8 +20,8 @@ public class Transporter {
         self.endpoint = endpoint;
     }
     
-    private func getUrl<T>(_ modelType: T.Type, for controllerType: AnyClass? = nil, pathVars: PathVars? = nil, queryParams: QueryParams? = nil) -> URL where T: Codable {
-        var segment = endpoint.segmentOf(modelType.typeName, for: controllerType);
+    private func getUrl<T>(_ modelType: T.Type, for controllerType: AnyClass? = nil, httpMethod: HttpMethod, pathVars: PathVars? = nil, queryParams: QueryParams? = nil) -> URL where T: Codable {
+        var segment = endpoint.segmentOf(modelType.typeName, for: controllerType, httpMethod: httpMethod);
         
         if let pathVars = pathVars {
             segment = String(format: segment, arguments: pathVars.vars.map({String(describing: $0)}));
@@ -42,7 +42,7 @@ public class Transporter {
     
     @discardableResult
     public func get<T>(_ modelType: T.Type, for controllerType: AnyClass? = nil, pathVars: PathVars? = nil, queryParams: QueryParams? = nil, completionHandler: @escaping CompletionBlock<T>) -> URLSessionTask where T: Codable {
-        let url = getUrl(modelType, for: controllerType, pathVars: pathVars, queryParams: queryParams);
+        let url = getUrl(modelType, for: controllerType, httpMethod: .get, pathVars: pathVars, queryParams: queryParams);
         let request = URLRequest(url: url);
         return executeRequest(request, completionHandler: completionHandler);
     }
@@ -51,25 +51,25 @@ public class Transporter {
     
     @discardableResult
     public func post<T>(_ model: T, for controllerType: AnyClass? = nil, pathVars: PathVars? = nil, queryParams: QueryParams? = nil, completionHandler: @escaping EmptyCompletionBlock) -> URLSessionTask where T: Codable {
-        let url = getUrl(T.self, for: controllerType, pathVars: pathVars, queryParams: queryParams);
+        let url = getUrl(T.self, for: controllerType, httpMethod: .post, pathVars: pathVars, queryParams: queryParams);
         return postToURL(url, model: model, completionHandler: completionHandler);
     }
 
     @discardableResult
     public func post<T, R>(_ model: T, returnType: R.Type, for controllerType: AnyClass? = nil, pathVars: PathVars? = nil, queryParams: QueryParams? = nil, completionHandler: @escaping CompletionBlock<R>) -> URLSessionTask where T: Codable, R: Decodable {
-        let url = getUrl(T.self, for: controllerType, pathVars: pathVars, queryParams: queryParams);
+        let url = getUrl(T.self, for: controllerType, httpMethod: .post, pathVars: pathVars, queryParams: queryParams);
         return postToURL(url, model: model, completionHandler: completionHandler);
     }
     
     @discardableResult
     public func post<T, E>(_ model: T, for controllerType: AnyClass? = nil, to action: E, pathVars: PathVars? = nil, queryParams: QueryParams? = nil, completionHandler: @escaping EmptyCompletionBlock) -> URLSessionTask where T: Codable, E: RawRepresentable, E.RawValue == Int {
-        let url = getUrl(T.self, for: controllerType, pathVars: pathVars, queryParams: queryParams);
+        let url = getUrl(T.self, for: controllerType, httpMethod: .post, pathVars: pathVars, queryParams: queryParams);
         return postToURL(url, model: model, completionHandler: completionHandler);
     }
     
     @discardableResult
     public func post<T, E, R>(_ model: T, returnType: R.Type, for controllerType: AnyClass? = nil, to action: E? = nil, pathVars: PathVars? = nil, queryParams: QueryParams? = nil, completionHandler: @escaping CompletionBlock<R>) -> URLSessionTask where T: Codable, E: RawRepresentable, E.RawValue == Int, R: Decodable {
-        let url = getUrl(T.self, for: controllerType, pathVars: pathVars, queryParams: queryParams);
+        let url = getUrl(T.self, for: controllerType, httpMethod: .post, pathVars: pathVars, queryParams: queryParams);
         return postToURL(url, model: model, completionHandler: completionHandler);
     }
 
@@ -86,7 +86,7 @@ public class Transporter {
     
     @discardableResult
     public func put<T>(_ model: T, for controllerType: AnyClass? = nil, pathVars: PathVars? = nil, queryParams: QueryParams? = nil, completionHandler: @escaping EmptyCompletionBlock) -> URLSessionTask where T: Codable {
-        let url = getUrl(T.self, for: controllerType, pathVars: pathVars, queryParams: queryParams);
+        let url = getUrl(T.self, for: controllerType, httpMethod: .put, pathVars: pathVars, queryParams: queryParams);
         
         var request = URLRequest(url: url);
         request.httpMethod = HttpMethod.put.rawValue;
