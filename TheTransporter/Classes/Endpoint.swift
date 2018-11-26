@@ -29,6 +29,21 @@ extension EndpointProtocol {
         return segment!.string;
     }
     
+    public func segmentOf<E>(_ modelType: String, for controllerType: AnyClass? = nil, to action: E, httpMethod: HttpMethod = .get) -> String where E: RawRepresentable, E.RawValue == Int {
+        let controllerTypeName = controllerType != nil ? String(describing: controllerType!) : nil;
+        
+        let segment = segments.first(where: {
+            $0.modelType == modelType && $0.controllerType == controllerTypeName && $0.action == action.rawValue && $0.httpMethods.contains(httpMethod)
+        })
+        
+        if segment == nil {
+            assert(true, "No endpoint found");
+            return "";
+        }
+        
+        return segment!.string;
+    }
+    
     public func of(_ modelType: String, for controllerType: AnyClass? = nil, httpMethod: HttpMethod = .get) -> URL {
         let controllerTypeName = controllerType != nil ? String(describing: controllerType!) : nil;
         
@@ -44,11 +59,11 @@ extension EndpointProtocol {
         return URL(string: segment!.string, relativeTo: apiUrl)!
     }
     
-    public func of<E: RawRepresentable>(_ modelType: String, for controllerType: AnyClass? = nil, to action: E? = nil, httpMethod: HttpMethod = .get) -> URL where E.RawValue == Int {
+    public func of<E: RawRepresentable>(_ modelType: String, for controllerType: AnyClass? = nil, to action: E, httpMethod: HttpMethod = .get) -> URL where E.RawValue == Int {
         let controllerTypeName = controllerType != nil ? String(describing: controllerType!) : nil;
         
         let segment = segments.first(where: {
-            $0.modelType == modelType && $0.controllerType == controllerTypeName && $0.action == action?.rawValue && $0.httpMethods.contains(httpMethod)
+            $0.modelType == modelType && $0.controllerType == controllerTypeName && $0.action == action.rawValue && $0.httpMethods.contains(httpMethod)
         })
         
         if segment == nil {
