@@ -20,7 +20,7 @@ public class Transporter {
         self.endpoint = endpoint;
     }
     
-    private func getUrl<T>(_ modelType: T.Type, for controllerType: AnyClass? = nil, httpMethod: HttpMethod, pathVars: PathVars? = nil, queryParams: QueryParams? = nil) -> URL where T: Codable {
+    func getUrl<T>(_ modelType: T.Type, for controllerType: AnyClass? = nil, httpMethod: HttpMethod, pathVars: PathVars? = nil, queryParams: QueryParams? = nil) -> URL where T: Codable {
         var segment = endpoint.segmentOf(modelType.typeName, for: controllerType, httpMethod: httpMethod);
         
         if let pathVars = pathVars {
