@@ -20,7 +20,7 @@ public class Transporter {
         self.endpoint = endpoint;
     }
     
-    func getUrl<T>(_ modelType: T.Type, for controllerType: AnyClass? = nil, httpMethod: HttpMethod, pathVars: PathVars? = nil, queryParams: QueryParams? = nil) -> URL where T: Codable {
+    public func getUrl<T>(_ modelType: T.Type, for controllerType: AnyClass? = nil, httpMethod: HttpMethod, pathVars: PathVars? = nil, queryParams: QueryParams? = nil) -> URL where T: Codable {
         var segment = endpoint.segmentOf(modelType.typeName, for: controllerType, httpMethod: httpMethod);
         
         if let pathVars = pathVars {
@@ -38,7 +38,7 @@ public class Transporter {
         return urlComponents.url!
     }
     
-    private func getUrl<T, E>(_ modelType: T.Type, for controllerType: AnyClass? = nil, to action: E, httpMethod: HttpMethod, pathVars: PathVars? = nil, queryParams: QueryParams? = nil) -> URL where T: Codable, E: RawRepresentable, E.RawValue == Int  {
+    public func getUrl<T, E>(_ modelType: T.Type, for controllerType: AnyClass? = nil, to action: E, httpMethod: HttpMethod, pathVars: PathVars? = nil, queryParams: QueryParams? = nil) -> URL where T: Codable, E: RawRepresentable, E.RawValue == Int  {
         var segment = endpoint.segmentOf(modelType.typeName, for: controllerType, to: action, httpMethod: httpMethod);
         if let pathVars = pathVars {
             segment = String(format: segment, arguments: pathVars.vars.map({String(describing: $0)}));
