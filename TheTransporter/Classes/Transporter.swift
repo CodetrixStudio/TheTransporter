@@ -11,6 +11,12 @@ import Foundation
 public class Transporter {
     public static let shared = Transporter();
     
+    public lazy var jsonDecoder: JSONDecoder = {
+        let jsonDecoder = JSONDecoder();
+        jsonDecoder.dataDecodingStrategy = .deferredToData;
+        return jsonDecoder;
+    }()
+    
     public typealias CompletionBlock<T> = (T?) -> Void
     public typealias EmptyCompletionBlock = (Bool?) -> Void
     
@@ -129,7 +135,7 @@ public class Transporter {
                 }
                 return;
             }
-            if let object: T = try! true as? T ?? responseData?.convert() {
+            if let object: T = try! true as? T ?? responseData?.convert(jsonDecoder: self.jsonDecoder) {
                 DispatchQueue.main.sync {
                     completionHandler(object);
                 }

@@ -9,9 +9,8 @@
 import Foundation
 
 extension Data {
-    func convert<T>(_ type: T.Type = T.self) throws -> T where T: Decodable {
+    func convert<T>(_ type: T.Type = T.self, jsonDecoder: JSONDecoder) throws -> T where T: Decodable {
         let data = self;
-        let jsonDecoder = JSONDecoder();
         let object = try jsonDecoder.decode(type, from: data);
         return object;
     }
