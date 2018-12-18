@@ -11,6 +11,8 @@ import Foundation
 public class Transporter {
     public static let shared = Transporter();
     
+    public lazy var headers = [String: String]();
+    
     public lazy var jsonDecoder: JSONDecoder = {
         let jsonDecoder = JSONDecoder();
         jsonDecoder.dataDecodingStrategy = .deferredToData;
@@ -114,7 +116,7 @@ public class Transporter {
         var request = URLRequest(url: url);
         request.httpMethod = HttpMethod.put.rawValue;
         request.httpBody = try! model.toData();
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type");
         
         return executeRequest(request, completionHandler: completionHandler);
     }
@@ -123,6 +125,9 @@ public class Transporter {
     
     @discardableResult
     public func executeRequest<T>(_ request: URLRequest, completionHandler: @escaping CompletionBlock<T>) -> URLSessionTask where T: Decodable {
+        var request = request;
+        headers.forEach({request.addValue($0.value, forHTTPHeaderField: $0.key)});
+        
         let task = URLSession.shared.dataTask(with: request, completionHandler: { (responseData: Data?, response: URLResponse?, error: Error?) in
             #if DEBUG
             print("\n\n\n");
