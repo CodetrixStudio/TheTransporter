@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Transporter {
+open class Transporter {
     public static let shared = Transporter();
     
     public lazy var headers = [String: String]();
