@@ -128,27 +128,31 @@ public class Transporter {
         var request = request;
         headers.forEach({request.addValue($0.value, forHTTPHeaderField: $0.key)});
         
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { (responseData: Data?, response: URLResponse?, error: Error?) in
-            #if DEBUG
-            print("\n\n\n");
-            print("url:", request.url!.absoluteString, "\nresponse:", responseData != nil ? String(bytes: responseData!, encoding: .utf8)! : " response is nil");
-            #endif
-            
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
-                DispatchQueue.main.sync {
-                    completionHandler(false as? T);
-                }
-                return;
-            }
-            if let object: T = try! true as? T ?? responseData?.convert(jsonDecoder: self.jsonDecoder) {
-                DispatchQueue.main.sync {
-                    completionHandler(object);
-                }
-            }
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data: Data?, response: URLResponse?, error: Error?) in
+            self.handleResponse(forRequest: request, data: data, response: response, error: error, completionHandler: completionHandler);
         })
 
         task.resume();
         return task;
+    }
+    
+    open func handleResponse<T>(forRequest request: URLRequest, data: Data?, response: URLResponse?, error: Error?, completionHandler: @escaping CompletionBlock<T>) where T: Decodable {
+        #if DEBUG
+        print("\n\n\n");
+        print("url:", request.url!.absoluteString, "\nresponse:", data != nil ? String(bytes: data!, encoding: .utf8)! : " response is nil");
+        #endif
+        
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+            DispatchQueue.main.sync {
+                completionHandler(false as? T);
+            }
+            return;
+        }
+        if let object: T = try! true as? T ?? data?.convert(jsonDecoder: self.jsonDecoder) {
+            DispatchQueue.main.sync {
+                completionHandler(object);
+            }
+        }
     }
 }
 
