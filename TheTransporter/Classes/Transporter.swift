@@ -9,8 +9,6 @@
 import Foundation
 
 open class Transporter {
-    public static let shared = Transporter();
-    
     public lazy var headers = [String: String]();
     
     public lazy var jsonDecoder: JSONDecoder = {
@@ -23,6 +21,9 @@ open class Transporter {
     public typealias EmptyCompletionBlock = (Bool?) -> Void
     
     public private(set) var endpoint: EndpointProtocol!
+
+    public init() {
+    }
     
     public func set(endpoint: EndpointProtocol) {
         self.endpoint = endpoint;
