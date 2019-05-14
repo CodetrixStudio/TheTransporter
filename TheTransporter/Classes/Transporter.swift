@@ -122,6 +122,18 @@ open class Transporter {
         return executeRequest(request, completionHandler: completionHandler);
     }
     
+    @discardableResult
+    public func put<T>(_ model: T, for controllerType: AnyClass? = nil, pathVars: PathVars? = nil, queryParams: QueryParams? = nil, completionHandler: @escaping CompletionBlock<T>) -> URLSessionTask where T: Codable {
+        let url = getUrl(T.self, for: controllerType, httpMethod: .put, pathVars: pathVars, queryParams: queryParams);
+        
+        var request = URLRequest(url: url);
+        request.httpMethod = HttpMethod.put.rawValue;
+        request.httpBody = try! model.toData();
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type");
+        
+        return executeRequest(request, completionHandler: completionHandler);
+    }
+    
     //MARK: DELETE
     
     @discardableResult
