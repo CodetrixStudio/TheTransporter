@@ -123,7 +123,7 @@ open class Transporter {
     }
     
     @discardableResult
-    public func put<T>(_ model: T, for controllerType: AnyClass? = nil, pathVars: PathVars? = nil, queryParams: QueryParams? = nil, completionHandler: @escaping CompletionBlock<T>) -> URLSessionTask where T: Codable {
+    public func put<T, R>(_ model: T, returnType: R.Type, for controllerType: AnyClass? = nil, pathVars: PathVars? = nil, queryParams: QueryParams? = nil, completionHandler: @escaping CompletionBlock<R>) -> URLSessionTask where T: Codable, R: Decodable {
         let url = getUrl(T.self, for: controllerType, httpMethod: .put, pathVars: pathVars, queryParams: queryParams);
         
         var request = URLRequest(url: url);
